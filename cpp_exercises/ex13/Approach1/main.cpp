@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <queue>
 #include <cmath>
-#include <utility>
 
 using namespace std;
 
@@ -15,11 +14,26 @@ float compute_median(vector<int> vec){
     return ans;
 }
 
+float m;
+int k;
 struct CompareDistMedian{
-    bool operator()(pair<float, float> p1, pair<float, float> p2){
-        return p1.second > p2.second;
+    bool operator()(int l, int r){
+        return abs((float)l-m) > abs((float)r-m);
     }
 };
+
+vector<int> compute_k_closet(vector<int> vec){
+    priority_queue<int, vector<int>, CompareDistMedian> pq;
+    for(auto& e : vec) pq.push(e);
+    vector<int> ans;
+    for(int i=0; i<k; ++i){
+        ans.push_back(pq.top());
+        pq.pop();
+    }
+    return ans;
+}
+
+
 
 int main(){
     vector<int> vec;
@@ -33,23 +47,17 @@ int main(){
         cin >> tmp;
         vec.push_back(tmp);
     }
-
     cout << "input k size >> ";
-    int k;
     cin >> k;
 
-
     sort(vec.begin(), vec.end());
-    float m = compute_median(vec);
-    priority_queue<pair<float, float>, vector<pair<float, float>>, CompareDistMedian> pq;
-    for(auto& e : vec) pq.push({e, abs((float)e-m)});
-    
+    m = compute_median(vec);
+    vector<int> ans = compute_k_closet(vec);
     
     cout << "the " << k << "-closet numbers to the median are: ";
     cout << "{";
     for(int i=0; i<k; ++i){
-        cout << pq.top().first;
-        pq.pop();
+        cout << ans[i];
         if(i!=k-1)cout <<", ";
     }
     cout << "}" << endl;
